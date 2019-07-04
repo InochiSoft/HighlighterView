@@ -48,3 +48,5 @@ in source code (Activity):
         codeView.setLanguage(Language.DART);
         codeView.setText(code);
         
+Screenshot:
+![Sample DART](https://github.com/InochiSoft/HighlighterView/screenshot/ss-1.png)
