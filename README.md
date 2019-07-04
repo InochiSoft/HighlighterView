@@ -1,17 +1,17 @@
 Add it in your root build.gradle at the end of repositories:
     
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
+    allprojects {
+        repositories {
+            ...
+            maven { url 'https://jitpack.io' }
+        }
+    }
     
 Add the dependency
     
-	dependencies {
-	    implementation 'com.github.InochiSoft:HighlighterView:1.0'
-	}
+    dependencies {
+        implementation 'com.github.InochiSoft:HighlighterView:1.0'
+    }
     
 Sample usage:
 in layout:
