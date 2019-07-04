@@ -39,12 +39,12 @@ public class CodeView extends ScrollView {
     private float mNumberPaddingLeft = 6;
     private float mNumberPaddingTop = 4;
     private float mNumberPaddingRight = 10;
-    private float mNumberPaddingBottom = 4;
+    private float mNumberPaddingBottom = 0;
 
     private float mCodePaddingLeft = 4;
     private float mCodePaddingTop = 4;
     private float mCodePaddingRight = 4;
-    private float mCodePaddingBottom = 4;
+    private float mCodePaddingBottom = 0;
 
     private int mCodeLines = 0;
     private int mKeywordColor = ContextCompat.getColor(getContext(), R.color.red_400);
@@ -341,367 +341,377 @@ public class CodeView extends ScrollView {
     }
 
     private void parseCode(){
-        if (mLanguage.equals(Language.KOTLIN)){
-            colKeywords += ", fun, it";
-        }
+        if (mPlainText == null) mPlainText = "";
+        if (mLanguage == null) mLanguage = "general";
 
-        if (mLanguage.equals(Language.PHP)){
-            colKeywords += ", elseif, foreach, function, construct, continue, echo";
-            colDataTypes += ", this, TRUE, FALSE, NULL";
-            colMethods += ", function_exists, fclose, fopen, chmod, unlink, is_dir, is_file, is_writable, rtrim, trim, array, "+
-                    "strtolower, strtoupper, file_exists, isset, empty, array_merge, include, defined, is_numeric, header, ini_get, " +
-                    "error_reporting, error_get_last, preg_replace, array_keys, htmlspecialchars, explode, extension_loaded, " +
-                    "substr, strpos, basename, str_replace, str_ireplace, parent, require_once, require, class_exists, " +
-                    "method_exists, array_slice, is_callable, sscanf, exit, end, strlen, readfile, mkdir, getimagesize, imagecreatefromjpeg, " +
-                    "imagecreatefrompng, imagecreatetruecolor, imagecolorallocatealpha, imagecolorallocate, imagesavealpha, imagealphablending, " +
-                    "imagefill, imagecopyresampled, imagefontwidth, imagefontheight, imagettfbbox, imagettftext, imagepng, imagedestroy, is_dir" ;
-        }
-
-        String content = mPlainText;
-        content = unnormalizeString(content);
-
-        String[] texts = content.split("\n");
         StringBuilder newContent = new StringBuilder();
 
-        String[] keywords = colKeywords.split(",");
-        String[] dataTypes = colDataTypes.split(",");
-        String[] methods = colMethods.split(",");
-        String[] notations = colNotations.split(",");
+        if (!mLanguage.isEmpty()){
+            if (!mPlainText.isEmpty()){
 
-        mCodeLines = texts.length;
-
-        boolean isCommentBlock = false;
-        boolean isCommentHTMLBlock = false;
-        boolean isPHPBlock = false;
-        boolean isStringDoubleBlock = false;
-        boolean isStringSingleBlock = false;
-
-        boolean isHtmlOpeningTag = false;
-        boolean isHtmlClosingTag = false;
-        boolean isTagOpen = false;
-        boolean isSettingOpen = false;
-
-        int commentIndex = 0;
-        int commentHTMLIndex = 0;
-
-        for (int t = 0; t < texts.length; t++){
-            boolean isCommentLine = false;
-
-            String text = texts[t];
-
-            Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
-            ArrayList<String> listWord = split(text + " ", pattern);
-            StringBuilder newText = new StringBuilder();
-
-            for (int w = 0; w < listWord.size(); w++){
-                String word = listWord.get(w);
-                String newWord = word;
-                String prevWord = "";
-                String nextWord = "";
-
-                if (w > 0){
-                    prevWord = listWord.get(w - 1);
+                if (mLanguage.equals(Language.KOTLIN)){
+                    colKeywords += ", fun, it";
                 }
-                if (w < listWord.size() - 1){
-                    nextWord = listWord.get(w + 1);
+
+                if (mLanguage.equals(Language.PHP)){
+                    colKeywords += ", elseif, foreach, function, construct, continue, echo";
+                    colDataTypes += ", this, TRUE, FALSE, NULL";
+                    colMethods += ", function_exists, fclose, fopen, chmod, unlink, is_dir, is_file, is_writable, rtrim, trim, array, "+
+                            "strtolower, strtoupper, file_exists, isset, empty, array_merge, include, defined, is_numeric, header, ini_get, " +
+                            "error_reporting, error_get_last, preg_replace, array_keys, htmlspecialchars, explode, extension_loaded, " +
+                            "substr, strpos, basename, str_replace, str_ireplace, parent, require_once, require, class_exists, " +
+                            "method_exists, array_slice, is_callable, sscanf, exit, end, strlen, readfile, mkdir, getimagesize, imagecreatefromjpeg, " +
+                            "imagecreatefrompng, imagecreatetruecolor, imagecolorallocatealpha, imagecolorallocate, imagesavealpha, imagealphablending, " +
+                            "imagefill, imagecopyresampled, imagefontwidth, imagefontheight, imagettfbbox, imagettftext, imagepng, imagedestroy, is_dir" ;
                 }
-                // Command here
-                if (isCommentBlock){
-                    newWord = newWord.replace("•", "");
-                    commentIndex++;
-                    if (newWord.equals("◄")){
-                        isCommentBlock = false;
-                    }
-                } else if (isCommentHTMLBlock){
-                    newWord = newWord.replace("•", "");
-                    commentHTMLIndex++;
-                    if (newWord.equals("›")){
-                        isCommentHTMLBlock = false;
-                    }
-                } else {
-                    if (isCommentLine){
-                        newWord = newWord.replace("•", "");
-                    } else {
-                        if (word.startsWith("•") && word.endsWith("•")) {
+
+                String content = mPlainText;
+                content = unnormalizeString(content);
+
+                String[] texts = content.split("\n");
+
+                String[] keywords = colKeywords.split(",");
+                String[] dataTypes = colDataTypes.split(",");
+                String[] methods = colMethods.split(",");
+                String[] notations = colNotations.split(",");
+
+                mCodeLines = texts.length;
+
+                boolean isCommentBlock = false;
+                boolean isCommentHTMLBlock = false;
+                boolean isPHPBlock = false;
+                boolean isStringDoubleBlock = false;
+                boolean isStringSingleBlock = false;
+
+                boolean isHtmlOpeningTag = false;
+                boolean isHtmlClosingTag = false;
+                boolean isTagOpen = false;
+                boolean isSettingOpen = false;
+
+                int commentIndex = 0;
+                int commentHTMLIndex = 0;
+
+                for (int t = 0; t < texts.length; t++){
+                    boolean isCommentLine = false;
+
+                    String text = texts[t];
+
+                    Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
+                    ArrayList<String> listWord = split(text + " ", pattern);
+                    StringBuilder newText = new StringBuilder();
+
+                    for (int w = 0; w < listWord.size(); w++){
+                        String word = listWord.get(w);
+                        String newWord = word;
+                        String prevWord = "";
+                        String nextWord = "";
+
+                        if (w > 0){
+                            prevWord = listWord.get(w - 1);
+                        }
+                        if (w < listWord.size() - 1){
+                            nextWord = listWord.get(w + 1);
+                        }
+                        // Command here
+                        if (isCommentBlock){
                             newWord = newWord.replace("•", "");
-
-                            boolean isCantEdit = false;
-                            boolean isWord = false;
-
-                            if (!(isStringDoubleBlock || isStringSingleBlock)) {
-                                isCantEdit = true;
+                            commentIndex++;
+                            if (newWord.equals("◄")){
+                                isCommentBlock = false;
                             }
-
-                            if (word.contains("function")){
-                                Log.i("word", newWord);
+                        } else if (isCommentHTMLBlock){
+                            newWord = newWord.replace("•", "");
+                            commentHTMLIndex++;
+                            if (newWord.equals("›")){
+                                isCommentHTMLBlock = false;
                             }
+                        } else {
+                            if (isCommentLine){
+                                newWord = newWord.replace("•", "");
+                            } else {
+                                if (word.startsWith("•") && word.endsWith("•")) {
+                                    newWord = newWord.replace("•", "");
 
-                            if (isCantEdit || (mLanguage.equals(Language.PHP) && isPHPBlock && isHtmlOpeningTag)) {
-                                if (!(mLanguage.equals(Language.HTML) || mLanguage.equals(Language.XML))) {
-                                    for (String key : keywords) {
-                                        if (mLanguage.equals(Language.VB)){
-                                            if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
-                                                newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
-                                                isWord = true;
-                                                break;
-                                            }
-                                        } else {
-                                            if (word.contains("function") && key.trim().equals("function")){
-                                                Log.i("word", newWord);
-                                            }
-                                            if (newWord.trim().equals(key.trim())) {
-                                                newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
-                                                isWord = true;
-                                                break;
-                                            }
-                                        }
+                                    boolean isCantEdit = false;
+                                    boolean isWord = false;
+
+                                    if (!(isStringDoubleBlock || isStringSingleBlock)) {
+                                        isCantEdit = true;
                                     }
-                                    if (!isWord) {
-                                        for (String key : dataTypes) {
-                                            if (mLanguage.equals(Language.VB)){
-                                                if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
-                                                    newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
-                                                    isWord = true;
-                                                    break;
-                                                }
-                                            } else {
-                                                if (newWord.trim().equals(key.trim())) {
-                                                    newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
-                                                    isWord = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
+
+                                    if (word.contains("function")){
+                                        Log.i("word", newWord);
                                     }
-                                    if (!isWord) {
-                                        for (String key : methods) {
-                                            if (mLanguage.equals(Language.VB)){
-                                                if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
-                                                    newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                                                    isWord = true;
-                                                    break;
-                                                }
-                                            } else {
-                                                if (newWord.trim().equals(key.trim())) {
-                                                    newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                                                    isWord = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (!isWord) {
-                                        if (prevWord.equals("@")){
-                                            for (String key : notations) {
+
+                                    if (isCantEdit || (mLanguage.equals(Language.PHP) && isPHPBlock && isHtmlOpeningTag)) {
+                                        if (!(mLanguage.equals(Language.HTML) || mLanguage.equals(Language.XML))) {
+                                            for (String key : keywords) {
                                                 if (mLanguage.equals(Language.VB)){
                                                     if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
-                                                        newWord = String.format("[●%s●]%s[●]", colorNotation, newWord);
+                                                        newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
+                                                        isWord = true;
                                                         break;
                                                     }
                                                 } else {
+                                                    if (word.contains("function") && key.trim().equals("function")){
+                                                        Log.i("word", newWord);
+                                                    }
                                                     if (newWord.trim().equals(key.trim())) {
-                                                        newWord = String.format("[●%s●]%s[●]", colorNotation, newWord);
+                                                        newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
+                                                        isWord = true;
                                                         break;
                                                     }
                                                 }
                                             }
+                                            if (!isWord) {
+                                                for (String key : dataTypes) {
+                                                    if (mLanguage.equals(Language.VB)){
+                                                        if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
+                                                            newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
+                                                            isWord = true;
+                                                            break;
+                                                        }
+                                                    } else {
+                                                        if (newWord.trim().equals(key.trim())) {
+                                                            newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
+                                                            isWord = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (!isWord) {
+                                                for (String key : methods) {
+                                                    if (mLanguage.equals(Language.VB)){
+                                                        if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
+                                                            newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                                            isWord = true;
+                                                            break;
+                                                        }
+                                                    } else {
+                                                        if (newWord.trim().equals(key.trim())) {
+                                                            newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                                            isWord = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (!isWord) {
+                                                if (prevWord.equals("@")){
+                                                    for (String key : notations) {
+                                                        if (mLanguage.equals(Language.VB)){
+                                                            if (newWord.trim().toLowerCase().equals(key.trim().toLowerCase())) {
+                                                                newWord = String.format("[●%s●]%s[●]", colorNotation, newWord);
+                                                                break;
+                                                            }
+                                                        } else {
+                                                            if (newWord.trim().equals(key.trim())) {
+                                                                newWord = String.format("[●%s●]%s[●]", colorNotation, newWord);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (isNumeric(newWord)) {
+                                                newWord = String.format("[●%s●]%s[●]", colorNumeric, newWord);
+                                            }
+                                        }
+                                    } else {
+                                        newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                    }
+
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)) {
+                                        if (nextWord.equals(":")){
+                                            if (isCantEdit && (isHtmlOpeningTag || isHtmlClosingTag)){
+                                                newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
+                                            }
+                                        }
+                                        if (isTagOpen){
+                                            newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
                                         }
                                     }
-                                    if (isNumeric(newWord)) {
-                                        newWord = String.format("[●%s●]%s[●]", colorNumeric, newWord);
-                                    }
-                                }
-                            } else {
-                                newWord = String.format("[●%s●]%s[●]", colorString, newWord);
-                            }
 
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)) {
-                                if (nextWord.equals(":")){
-                                    if (isCantEdit && (isHtmlOpeningTag || isHtmlClosingTag)){
-                                        newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
+                                    if (isSettingOpen){
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
                                     }
-                                }
-                                if (isTagOpen){
-                                    newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                                }
-                            }
+                                } else if (newWord.equals("\"")) {
+                                    if (!isStringDoubleBlock) {
+                                        isStringDoubleBlock = true;
+                                        newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                    } else {
+                                        isStringDoubleBlock = false;
+                                        newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                    }
+                                } else if (newWord.equals("'")) {
+                                    if (!mLanguage.equals(Language.VB)) {
+                                        if (!isStringSingleBlock) {
+                                            isStringSingleBlock = true;
+                                            newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                        } else {
+                                            isStringSingleBlock = false;
+                                            newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                        }
+                                    }
+                                } else if (newWord.equals("♠")) {
+                                    newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
+                                    isPHPBlock = true;
+                                } else if (newWord.equals("♦")) {
+                                    newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
+                                    isPHPBlock = false;
+                                } else if (newWord.equals("<")) {
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)) {
+                                        isTagOpen = true;
+                                        isHtmlOpeningTag = true;
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
+                                } else if (newWord.equals("▼")){ // </
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)) {
+                                        isTagOpen = true;
+                                        isHtmlClosingTag = true;
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
+                                } else if (newWord.equals("▲")){ // />
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)) {
+                                        if (isHtmlOpeningTag){
+                                            isHtmlOpeningTag = false;
+                                        }
+                                        if (isHtmlClosingTag){
+                                            isHtmlClosingTag = false;
+                                        }
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
 
-                            if (isSettingOpen){
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                        } else if (newWord.equals("\"")) {
-                            if (!isStringDoubleBlock) {
-                                isStringDoubleBlock = true;
-                                newWord = String.format("[●%s●]%s[●]", colorString, newWord);
-                            } else {
-                                isStringDoubleBlock = false;
-                                newWord = String.format("[●%s●]%s[●]", colorString, newWord);
-                            }
-                        } else if (newWord.equals("'")) {
-                            if (!mLanguage.equals(Language.VB)) {
-                                if (!isStringSingleBlock) {
-                                    isStringSingleBlock = true;
-                                    newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                } else if (newWord.equals(">")){
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)){
+                                        if (isHtmlOpeningTag){
+                                            newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                            isHtmlOpeningTag = false;
+                                        } else if (isHtmlClosingTag){
+                                            newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                            isHtmlClosingTag = false;
+                                        }
+                                    }
+                                } else if (newWord.equals(" ")){
+                                    if (mLanguage.equals(Language.HTML)
+                                            || mLanguage.equals(Language.XML)
+                                            || mLanguage.equals(Language.PHP)){
+                                        if (isTagOpen){
+                                            isTagOpen = false;
+                                        }
+                                    }
+                                } else if (newWord.equals("[")){
+                                    if (mLanguage.equals(Language.INI)
+                                            || mLanguage.equals(Language.INF)){
+                                        isSettingOpen = true;
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
+                                } else if (newWord.equals("]")){
+                                    if (mLanguage.equals(Language.INI)
+                                            || mLanguage.equals(Language.INF)){
+                                        isSettingOpen = false;
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
+                                } else if (newWord.equals("—")){
+                                    if (mLanguage.equals(Language.PHP)){
+                                        if (nextWord.replace("•", "").equals("construct")){
+                                            newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
+                                        }
+                                    }
+                                } else if (newWord.equals("$")){
+                                    if (mLanguage.equals(Language.PHP)){
+                                        if (nextWord.replace("•", "").equals("this")){
+                                            newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
+                                        }
+                                    }
                                 } else {
-                                    isStringSingleBlock = false;
-                                    newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                    if ((isStringDoubleBlock || isStringSingleBlock)) {
+                                        if (!(mLanguage.equals(Language.PHP) && isPHPBlock && isHtmlOpeningTag)){
+                                            newWord = String.format("[●%s●]%s[●]", colorString, newWord);
+                                        }
+                                    }
+                                    if (isTagOpen){
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
+                                    if (isSettingOpen){
+                                        newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                    }
                                 }
-                            }
-                        } else if (newWord.equals("♠")) {
-                            newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
-                            isPHPBlock = true;
-                        } else if (newWord.equals("♦")) {
-                            newWord = String.format("[●%s●]%s[●]", colorAttribute, newWord);
-                            isPHPBlock = false;
-                        } else if (newWord.equals("<")) {
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)) {
-                                isTagOpen = true;
-                                isHtmlOpeningTag = true;
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                        } else if (newWord.equals("▼")){ // </
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)) {
-                                isTagOpen = true;
-                                isHtmlClosingTag = true;
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                        } else if (newWord.equals("▲")){ // />
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)) {
-                                if (isHtmlOpeningTag){
-                                    isHtmlOpeningTag = false;
-                                }
-                                if (isHtmlClosingTag){
-                                    isHtmlClosingTag = false;
-                                }
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
                             }
 
-                        } else if (newWord.equals(">")){
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)){
-                                if (isHtmlOpeningTag){
-                                    newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                                    isHtmlOpeningTag = false;
-                                } else if (isHtmlClosingTag){
-                                    newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                                    isHtmlClosingTag = false;
-                                }
-                            }
-                        } else if (newWord.equals(" ")){
-                            if (mLanguage.equals(Language.HTML)
-                                    || mLanguage.equals(Language.XML)
-                                    || mLanguage.equals(Language.PHP)){
-                                if (isTagOpen){
-                                    isTagOpen = false;
-                                }
-                            }
-                        } else if (newWord.equals("[")){
                             if (mLanguage.equals(Language.INI)
                                     || mLanguage.equals(Language.INF)){
-                                isSettingOpen = true;
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                        } else if (newWord.equals("]")){
-                            if (mLanguage.equals(Language.INI)
-                                    || mLanguage.equals(Language.INF)){
-                                isSettingOpen = false;
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                        } else if (newWord.equals("—")){
-                            if (mLanguage.equals(Language.PHP)){
-                                if (nextWord.replace("•", "").equals("construct")){
-                                    newWord = String.format("[●%s●]%s[●]", colorKeyword, newWord);
-                                }
-                            }
-                        } else if (newWord.equals("$")){
-                            if (mLanguage.equals(Language.PHP)){
-                                if (nextWord.replace("•", "").equals("this")){
-                                    newWord = String.format("[●%s●]%s[●]", colorDataType, newWord);
-                                }
-                            }
-                        } else {
-                            if ((isStringDoubleBlock || isStringSingleBlock)) {
-                                if (!(mLanguage.equals(Language.PHP) && isPHPBlock && isHtmlOpeningTag)){
-                                    newWord = String.format("[●%s●]%s[●]", colorString, newWord);
-                                }
-                            }
-                            if (isTagOpen){
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
-                            }
-                            if (isSettingOpen){
-                                newWord = String.format("[●%s●]%s[●]", colorMethod, newWord);
+                                if (!isCommentLine)
+                                    if (newWord.equals("#")){
+                                        newWord = String.format("[●%s●]%s", colorComment, newWord);
+                                        isCommentLine = true;
+                                    }
+                            } else if (mLanguage.equals(Language.VB)) {
+                                if (!isCommentLine)
+                                    if (newWord.equals("'")){
+                                        newWord = String.format("[●%s●]%s", colorComment, newWord);
+                                        isCommentLine = true;
+                                    }
+                            } else {
+                                //is comment line
+                                if (!isCommentLine)
+                                    if (newWord.equals("■")){
+                                        newWord = String.format("[●%s●]%s", colorComment, newWord);
+                                        isCommentLine = true;
+                                    }
                             }
                         }
-                    }
 
-                    if (mLanguage.equals(Language.INI)
-                            || mLanguage.equals(Language.INF)){
-                        if (!isCommentLine)
-                        if (newWord.equals("#")){
-                            newWord = String.format("[●%s●]%s", colorComment, newWord);
-                            isCommentLine = true;
-                        }
-                    } else if (mLanguage.equals(Language.VB)) {
-                        if (!isCommentLine)
-                            if (newWord.equals("'")){
+                        //is comment block
+                        if (!isCommentBlock)
+                            if (newWord.equals("►")){
                                 newWord = String.format("[●%s●]%s", colorComment, newWord);
-                                isCommentLine = true;
+                                isCommentBlock = true;
+                                commentIndex++;
                             }
-                    } else {
-                        //is comment line
-                        if (!isCommentLine)
-                        if (newWord.equals("■")){
-                            newWord = String.format("[●%s●]%s", colorComment, newWord);
-                            isCommentLine = true;
-                        }
+
+                        if (!isCommentHTMLBlock)
+                            if (newWord.equals("‹")){
+                                newWord = String.format("[●%s●]%s", colorComment, newWord);
+                                isCommentHTMLBlock = true;
+                                commentHTMLIndex++;
+                            }
+
+                        newWord = normalizeString(newWord); //Must end of process
+                        newText.append(newWord);
                     }
+
+                    newContent.append(newText);
+
+                    if (!isCommentBlock && commentIndex > 0){
+                        newContent.append("</font>");
+                        commentIndex = 0;
+                    }
+
+                    if (!isCommentHTMLBlock && commentHTMLIndex > 0){
+                        newContent.append("</font>");
+                        commentHTMLIndex = 0;
+                    }
+
+                    if (isCommentLine){
+                        newContent.append("</font>");
+                    }
+
+                    if (t < texts.length - 1)
+                        newContent.append("<br/>");
                 }
-
-                //is comment block
-                if (!isCommentBlock)
-                if (newWord.equals("►")){
-                    newWord = String.format("[●%s●]%s", colorComment, newWord);
-                    isCommentBlock = true;
-                    commentIndex++;
-                }
-
-                if (!isCommentHTMLBlock)
-                if (newWord.equals("‹")){
-                    newWord = String.format("[●%s●]%s", colorComment, newWord);
-                    isCommentHTMLBlock = true;
-                    commentHTMLIndex++;
-                }
-
-                newWord = normalizeString(newWord); //Must end of process
-                newText.append(newWord);
             }
-
-            newContent.append(newText);
-
-            if (!isCommentBlock && commentIndex > 0){
-                newContent.append("</font>");
-                commentIndex = 0;
-            }
-
-            if (!isCommentHTMLBlock && commentHTMLIndex > 0){
-                newContent.append("</font>");
-                commentHTMLIndex = 0;
-            }
-
-            if (isCommentLine){
-                newContent.append("</font>");
-            }
-
-            newContent.append("<br/>");
         }
 
         mCodeText = newContent.toString();
