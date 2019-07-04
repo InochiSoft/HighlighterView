@@ -49,4 +49,4 @@ in source code (Activity):
         codeView.setText(code);
         
 Screenshot:
-![Sample DART](https://github.com/InochiSoft/HighlighterView/screenshot/ss-1.png)
+![Sample DART](https://github.com/InochiSoft/HighlighterView/blob/master/screenshot/ss-1.png)
