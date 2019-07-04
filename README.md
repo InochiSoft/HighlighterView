@@ -32,23 +32,41 @@ in layout:
     
 in source code (Activity):
 
-        String code = "class MainApp extends StatelessWidget {\n" +
-                "  @override\n" +
-                "  Widget build(BuildContext context) {\n" +
-                "    return MaterialApp(\n" +
-                "      title: 'Buku Tamu',\n" +
-                "      theme: ThemeData(\n" +
-                "        primarySwatch: Colors.brown,\n" +
-                "      ),\n" +
-                "      home: MainActivity(title: 'Buku Tamu'),\n" +
-                "    );\n" +
-                "  }\n" +
-                "}";
+    String code = "class MainApp extends StatelessWidget {\n" +
+        "  @override\n" +
+        "  Widget build(BuildContext context) {\n" +
+        "    return MaterialApp(\n" +
+        "      title: 'Buku Tamu',\n" +
+        "      theme: ThemeData(\n" +
+        "        primarySwatch: Colors.brown,\n" +
+        "      ),\n" +
+        "      home: MainActivity(title: 'Buku Tamu'),\n" +
+        "    );\n" +
+        "  }\n" +
+        "}";
         
-        CodeView codeView = findViewById(R.id.codeView);
-        codeView.setLanguage(Language.DART);
-        codeView.setText(code);
+    CodeView codeView = findViewById(R.id.codeView);
+    codeView.setLanguage(Language.DART);
+    codeView.setText(code);
         
+        
+Other implementation:
+    String code = "write plain code here";
+    String langName = "java";
+        
+    CodeView.LayoutParams codeLayoutParams = new CodeView.LayoutParams(
+            CodeView.LayoutParams.MATCH_PARENT,
+            CodeView.LayoutParams.WRAP_CONTENT);
+        
+    codeLayoutParams.setMargins(0, 10, 0, 10);
+        
+    CodeView codeView = new CodeView(getContext());
+    codeView.setBackgroundColor(getContext().getResources().getColor(R.color.black));
+    codeView.setLayoutParams(codeLayoutParams);
+    codeView.setLanguage(langName);
+    codeView.setText(code);
+    
+    viewContainer.addView(codeView);    
 Screenshot:
 
 
