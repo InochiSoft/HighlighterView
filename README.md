@@ -8,10 +8,11 @@ Add it in your root build.gradle at the end of repositories:
 	}
     
 Add the dependency
+    
 	dependencies {
-	        implementation 'com.github.InochiSoft:HighlighterView:1.0'
+	    implementation 'com.github.InochiSoft:HighlighterView:1.0'
 	}
-
+    
 Sample usage:
 in layout:
 
