@@ -74,3 +74,4 @@ Screenshot:
 
 
 ![Sample DART](https://github.com/InochiSoft/HighlighterView/blob/master/screenshot/ss-1.png)
+![Sample DART](https://github.com/InochiSoft/HighlighterView/blob/master/screenshot/ss-2.png)
