@@ -1,0 +1,27 @@
+<resources>
+    <declare-styleable name="CodeView">
+        <attr name="text" format="string" />
+        <attr name="language" format="string" />
+        <attr name="text_size" format="dimension" />
+        <attr name="keyword_color" format="color" />
+        <attr name="datatype_color" format="color" />
+        <attr name="numeric_color" format="color" />
+        <attr name="method_color" format="color" />
+        <attr name="notation_color" format="color" />
+        <attr name="attribute_color" format="color" />
+        <attr name="comment_color" format="color" />
+        <attr name="string_color" format="color" />
+        <attr name="code_color" format="color" />
+        <attr name="number_color" format="color" />
+        <attr name="number_background" format="color" />
+        <attr name="code_background" format="color" />
+        <attr name="number_padding_left" format="dimension" />
+        <attr name="number_padding_top" format="dimension" />
+        <attr name="number_padding_right" format="dimension" />
+        <attr name="number_padding_bottom" format="dimension" />
+        <attr name="code_padding_left" format="dimension" />
+        <attr name="code_padding_top" format="dimension" />
+        <attr name="code_padding_right" format="dimension" />
+        <attr name="code_padding_bottom" format="dimension" />
+    </declare-styleable>
+</resources>

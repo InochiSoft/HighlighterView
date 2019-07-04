@@ -1,0 +1,49 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.0"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'shapeofview'
+    orgName = 'InochiSoft'
+
+    publishedGroupId = 'com.github.florent37'
+    libraryName = 'ShapeOfView'
+    artifact = 'shapeofview'
+
+    libraryDescription = 'ShapeOfView'
+
+    siteUrl = 'https://github.com/InochiSoft/HighlighterView'
+    gitUrl = 'https://github.com/InochiSoft/HighlighterView.git'
+
+    libraryVersion = rootProject.ext.libraryVersion
+
+    developerId = 'InochiSoft'
+    developerName = 'InochiSoft'
+    developerEmail = 'inochisoftware@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+}
