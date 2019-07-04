@@ -49,8 +49,9 @@ in source code (Activity):
     codeView.setLanguage(Language.DART);
     codeView.setText(code);
         
-        
+
 Other implementation:
+
     String code = "write plain code here";
     String langName = "java";
         
@@ -66,7 +67,9 @@ Other implementation:
     codeView.setLanguage(langName);
     codeView.setText(code);
     
-    viewContainer.addView(codeView);    
+    viewContainer.addView(codeView);
+    
+
 Screenshot:
 
 
